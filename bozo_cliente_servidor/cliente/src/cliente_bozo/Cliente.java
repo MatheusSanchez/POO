@@ -28,6 +28,7 @@ public class Cliente {
 	public static int calculaMaior(String DadosServer) {
 		
 		System.out.println("Recebido -> " + DadosServer);
+		
 		int tabuleiro[] = new int[11];
 		//int i = 0;	
 		
@@ -118,46 +119,44 @@ public class Cliente {
 			tabuleiro[7] = 0;
 		}
 		
-		/*for(int i = 1;i <= 6; i++) {
+		for(int i = 1;i <= 6; i++) {
 			tabuleiro[i] = countChar(DadosServer,i) * i;	
 			System.out.println("Posicao: " +i + " fez " +tabuleiro[i]+ " Pontos");
 		}
 		System.out.println("Full Hand: " +tabuleiro[7]);
 		System.out.println("Sequencia: " +tabuleiro[8]);
 		System.out.println("Quadra: " +tabuleiro[9]);
-		System.out.println("Quina: " +tabuleiro[10]);*/
+		System.out.println("Quina: " +tabuleiro[10]);
+		
+		
 		
 		for(int i = 10;i <= 7; i--) {
-			if(tabuleiro[i] != 0){
-					ocupado[i] = true;
+			if(tabuleiro[i] != 0 && ocupado[i] == false){	 
 					return i;
 			}
 		}
 		
+		int maior = 10;
+		
+		while(ocupado[maior] == true){ // pegando uma posicao valida
+			maior--;	
+		}
+		
 		for(int i = 1;i <= 6; i++) {
-			int maior = i;
-			count[i] = maior;
-			for(int j = i; j<= 6 ;j++) {
-				if(tabuleiro[j] > tabuleiro[maior]){
-					count[i] = j;
-					maior = j;
-				}
+			if(tabuleiro[i] > tabuleiro[maior] && ocupado[i] == false){
+				maior = i;
 			}	
 		}
 		
-		for(int i = 1;i <= 6; i++) {
-			System.out.println("count point " + count[i]);
-		}
 		
-		return 0;
+		return maior;
 	}
 	
 	
 	
 	public static void main(String[] args) throws IOException {
 		
-		
-		System.out.println("Ola mundo");
+
 		Socket cliente = new Socket("127.0.0.1",9669);	
 		System.out.println("Conectamos com o servidor");	
 		
@@ -175,18 +174,37 @@ public class Cliente {
 		
 		for (int i = 1; i <= 10; i++) {
 			saida.println("R"+i); // joga os dados	
-			System.out.println(server.nextLine()); // printa os dados
-			saida.println("T 0 0 0 0 0"); // alteracao
-			System.out.println(server.nextLine());
-			saida.println("T 0 0 0 0 0");
-			System.out.print(calculaMaior("2 2 2 2 2"));
-			saida.println("P"+i+" "+ i); // coloca no placar
-			System.out.println("Pontuação corrente " + server.nextLine());
+			String str_dados = "";
+			int pos_placar= 0;
+			
+			str_dados = server.nextLine();
+			System.out.println("Dados da jogada " + str_dados + "\n"); // printa os dados	
+			pos_placar = calculaMaior(str_dados);
+			System.out.println("Melhor posicao " + pos_placar + "\n"); 
+			
+			saida.println("T 1 1 1 1 1"); // alteracao
+			str_dados = server.nextLine();
+			System.out.println("Dados da jogada " + str_dados + "\n");
+			pos_placar = calculaMaior(str_dados);
+			System.out.println("Melhor posicao " + pos_placar + "\n");
+			
+			saida.println("T 1 1 1 1 1");			
+			str_dados = server.nextLine(); // ultimos dados gerados
+			System.out.println("Dados da jogada(ultimo) " + str_dados+ "\n");
+			pos_placar = calculaMaior(str_dados);
+			System.out.println("Melhor posicao " + pos_placar + "\n");
+			
+			pos_placar = calculaMaior(str_dados);
+			System.out.println("Colocando na posicao " + pos_placar + " do placar");
+			
+			saida.println("P"+i+" "+ pos_placar); // coloca no placar
+			ocupado[pos_placar] = true;
+			
+			System.out.println("Pontuação corrente " + server.nextLine() + "\n");
 		}
-		//System.out.println("Pontuação corrente " + server.nextLine());
+
+		
 		saida.print("F");
-		/*System.out.print("Eaee");
-		System.out.println("Pontuação final " + server.nextLine());*/
 	}
 
 }
