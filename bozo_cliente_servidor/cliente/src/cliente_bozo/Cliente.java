@@ -157,14 +157,15 @@ public class Cliente {
 	public static void main(String[] args) throws IOException {
 		
 
-		Socket cliente = new Socket("127.0.0.1",9669);	
+		Socket cliente = new Socket("127.0.0.1",9669);	// conecta com servidor
+		 
 		System.out.println("Conectamos com o servidor");	
 		
 		PrintStream saida = new  PrintStream(cliente.getOutputStream());
 		Scanner teclado = new Scanner(System.in);
 		Scanner server = new  Scanner(cliente.getInputStream());
 		
-		saida.println("I 9081453");
+		saida.println("I 9081453"); //inicia o jogo
 		System.out.println(server.nextLine());// mensagens de boas vindas
 	
 		for(int i = 1;i <= 10 ;i++) {
@@ -177,13 +178,13 @@ public class Cliente {
 			String str_dados = "";
 			int pos_placar= 0;
 			
-			str_dados = server.nextLine();
+			str_dados = server.nextLine(); // pega primeira string de dados
 			System.out.println("Dados da jogada " + str_dados + "\n"); // printa os dados	
-			pos_placar = calculaMaior(str_dados);
+			pos_placar = calculaMaior(str_dados); // calcula qual é a melhor posicao para jogar
 			System.out.println("Melhor posicao " + pos_placar + "\n"); 
 			
 			saida.println("T 1 1 1 1 1"); // alteracao
-			str_dados = server.nextLine();
+			str_dados = server.nextLine(); // pega os dados
 			System.out.println("Dados da jogada " + str_dados + "\n");
 			pos_placar = calculaMaior(str_dados);
 			System.out.println("Melhor posicao " + pos_placar + "\n");
